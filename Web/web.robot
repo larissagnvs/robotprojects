@@ -13,8 +13,8 @@ Suite Teardown     Fechar navegador
 Cenário I: Logar no e-commerce
     [Documentation]    Este teste visa efetuar login no e-commerce saucedemo.com
     [Tags]             login_ecommerce
-    Acessar o site saucedemo.com
-    Conferir título Swag Labs na página
+    Acessar saucedemo.com
+    Conferir título Swag Labs
     Efetuar login
     Conferir título Products
 
@@ -22,10 +22,10 @@ Cenário II: Adicionar Backpack e Bike no carrinho
     [Documentation]    Este teste irá adicionar produtos ao carrinho
     [Tags]             adicionar_produtos
     Buscar por Backpack
-    Adicionar Backpack ao carrinho
+    Adicionar Backpack no carrinho
     Buscar por Bike
-    Adicionar Bike ao carrinho
-    Conferir se os dois produtos estão no carrinho
+    Adicionar Bike no carrinho
+    Conferir os dois produtos no carrinho
 
 Cenário III: Remover um produto
     [Documentation]    Este teste irá remover um dos produtos do carrinho
@@ -41,19 +41,25 @@ Cenário IV: Efetuar compra
     Inserir dados pessoais
     Buscar por Bike
     Finalizar compra
-    Conferir de compra foi efetuada
+    Conferir compra efetuada
 
 Cenário V: Efetuar Logoff
     [Documentation]    Este teste irá efetuar logoff do e-commerce
     [Tags]    logoff
-    Retornar para a home do site
-    Efetuar logoff
+    Retornar para a home
+    Efetuar logout
 
 *** Variables ***
 
-${browser}        chrome
-${url}            https://www.saucedemo.com/
-
+${browser}             chrome
+${url}                 https://www.saucedemo.com/
+${cart}                //a[contains(@class,'link')]
+${backpack}            //div[@class='inventory_item_name'][contains(.,'Sauce Labs Backpack')]
+${bike}                //div[@class='inventory_item_name'][contains(.,'Sauce Labs Bike Light')]
+${information}         //span[contains(.,'Checkout: Your Information')]
+${overview}            //span[contains(.,'Checkout: Overview')]
+${checkoutComplete}    //span[contains(.,'Checkout: Complete!')]
+${logout}              //a[contains(.,'Logout')]
 
 
 *** Keywords ***
@@ -70,10 +76,10 @@ Fechar navegador
 
 ### Cenário I ###
 
-Acessar o site saucedemo.com
+Acessar saucedemo.com
     Go To    url=${url}
 
-Conferir título Swag Labs na página
+Conferir título Swag Labs
     Wait Until Element Is Visible    locator=//div[contains(@class,'logo')]
 
 Efetuar login
@@ -90,19 +96,19 @@ Conferir título Products
 Buscar por Backpack
     Page Should Contain    text=Sauce Labs Backpack
 
-Adicionar Backpack ao carrinho
+Adicionar Backpack no carrinho
     Click Button    locator=add-to-cart-sauce-labs-backpack
 
 Buscar por Bike
     Page Should Contain    text=Sauce Labs Bike Light
 
-Adicionar Bike ao carrinho
+Adicionar Bike no carrinho
     Click Button    locator=add-to-cart-sauce-labs-bike-light
 
-Conferir se os dois produtos estão no carrinho
-    Click Element    locator=//a[contains(@class,'link')]
+Conferir os dois produtos no carrinho
+    Click Element                    locator=${cart}
     Wait Until Element Is Visible    locator=//span[contains(.,'Your Cart')]
-    Page Should Contain Element    locator=//div[@class='inventory_item_name'][contains(.,'Sauce Labs Backpack')]    locator=//div[@class='inventory_item_name'][contains(.,'Sauce Labs Bike Light')]
+    Page Should Contain Element      locator=${backpack}    locator=${bike}
 
 
 ### Cenário III ###
@@ -115,31 +121,32 @@ Remover produto do carrinho
 
 Realizar Checkout
     Click Button    locator=checkout
-    Wait Until Element Is Visible    locator=//span[contains(.,'Checkout: Your Information')]
+    Wait Until Element Is Visible    locator=${information}
 
 Inserir dados pessoais
     Input Text    locator=first-name    text=Nazaré
     Input Text    locator=last-name    text=Tedesco
     Input Text    locator=postal-code    text=44190-000
     Click Button    locator=continue
-    Wait Until Element Is Visible    locator=//span[contains(.,'Checkout: Overview')]
+    Wait Until Element Is Visible    locator=${overview}
 
 Finalizar compra
     Click Button    locator=finish
-    Wait Until Element Is Visible    locator=//span[contains(.,'Checkout: Complete!')]
+    Wait Until Element Is Visible    locator=${checkoutComplete}
 
-Conferir de compra foi efetuada
+
+Conferir compra efetuada
     Page Should Contain    text=Thank you for your order!
 
 
 ### Cenário V ###
 
-Retornar para a home do site
+Retornar para a home
     Click Button    locator=back-to-products
     Conferir título Products
 
-Efetuar logoff
+Efetuar logout
     Click Button    locator=react-burger-menu-btn
-    Wait Until Element Is Visible    locator=//a[contains(.,'Logout')]
+    Wait Until Element Is Visible    locator=${logout}
     Click Element    locator=logout_sidebar_link
-    Conferir título Swag Labs na página
+    Conferir título Swag Labs
